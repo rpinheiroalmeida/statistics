@@ -62,6 +62,10 @@ func Mode(sample vector.Vector) vector.Vector {
 	return modes
 }
 
+func DataRange(sample vector.Vector) float64 {
+	return sample.Max() - sample.Min()
+}
+
 func count(sample vector.Vector) map[float64]int64 {
 	counts := map[float64]int64{}
 

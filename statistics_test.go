@@ -105,18 +105,9 @@ func TestMode(t *testing.T) {
 		sample vector.Vector
 		want   vector.Vector
 	}{
-		{
-			vector.Vector{7.0},
-			vector.Vector{7.0},
-		},
-		{
-			vector.Vector{7.0, 13.0, 13.0},
-			vector.Vector{13.0},
-		},
-		{
-			vector.Vector{17.0, 7.0, 13.0, 17.0, 13.0},
-			vector.Vector{17.0, 13.0},
-		},
+		{vector.Vector{7.0}, vector.Vector{7.0}},
+		{vector.Vector{7.0, 13.0, 13.0}, vector.Vector{13.0}},
+		{vector.Vector{17.0, 7.0, 13.0, 17.0, 13.0}, vector.Vector{17.0, 13.0}},
 	}
 
 	for _, c := range cases {
@@ -136,4 +127,35 @@ func TestModeFailWhenEmptySample(t *testing.T) {
 	}()
 
 	Mode(vector.Vector{})
+}
+
+func TestDataRange(t *testing.T) {
+	cases := []struct {
+		sample vector.Vector
+		want   float64
+	}{
+		{vector.Vector{10.0, 11.0, 12.0}, 2.0},
+		{vector.Vector{0.0, 11.0, 12.0}, 12.0},
+		{vector.Vector{-1.0, 11.0, 12.0}, 13.0},
+		{vector.Vector{1.0, 1.0, 1.0}, 0.0},
+		{vector.Vector{11.0}, 0.0},
+	}
+
+	for _, c := range cases {
+		gotDataRange := DataRange(c.sample)
+		if !reflect.DeepEqual(gotDataRange, c.want) {
+			t.Errorf("Expected DataRange (%v) for (%v) but got (%v)", c.want, c.sample,
+				gotDataRange)
+		}
+	}
+}
+
+func TestDataRangeWhenSampleIsEmpty(t *testing.T) {
+	defer func() {
+		if recover() == nil {
+			t.Error("A panic was expected but nothing happened when calculate DataRange for empty Sample")
+		}
+	}()
+
+	DataRange(vector.Vector{})
 }
