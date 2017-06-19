@@ -44,6 +44,47 @@ func Quantile(sample vector.Vector, percentile float64) float64 {
 	return sample[pIndex]
 }
 
+func Mode(sample vector.Vector) vector.Vector {
+	check(sample)
+
+	counts := count(sample)
+
+	maxQuantitie := maxValue(counts)
+
+	modes := vector.Vector{}
+
+	for k, v := range counts {
+		if v == maxQuantitie {
+			modes = append(modes, k)
+		}
+	}
+
+	return modes
+}
+
+func count(sample vector.Vector) map[float64]int64 {
+	counts := map[float64]int64{}
+
+	for _, value := range sample {
+		_, ok := counts[value]
+		if !ok {
+			counts[value] = 0
+		}
+		counts[value]++
+	}
+
+	return counts
+}
+
+func maxValue(counts map[float64]int64) int64 {
+	var quantities vector.Vector = vector.Vector{}
+	for _, v := range counts {
+		quantities = append(quantities, float64(v))
+	}
+
+	return int64(quantities.Max())
+}
+
 func oddSize(sample vector.Vector) bool {
 	return sample.Size()%2 == 1
 }

@@ -1,6 +1,7 @@
 package statistics
 
 import (
+	"reflect"
 	"testing"
 
 	"github.com/rpinheiroalmeida/linalg/vector"
@@ -97,4 +98,42 @@ func TestQuantile(t *testing.T) {
 			t.Errorf("The expected quantile for (%v) with percentile of (%.2f) was (%.2f) but got (%.2f)", c.sample, c.percentile, c.want, gotQuantile)
 		}
 	}
+}
+
+func TestMode(t *testing.T) {
+	cases := []struct {
+		sample vector.Vector
+		want   vector.Vector
+	}{
+		{
+			vector.Vector{7.0},
+			vector.Vector{7.0},
+		},
+		{
+			vector.Vector{7.0, 13.0, 13.0},
+			vector.Vector{13.0},
+		},
+		{
+			vector.Vector{17.0, 7.0, 13.0, 17.0, 13.0},
+			vector.Vector{17.0, 13.0},
+		},
+	}
+
+	for _, c := range cases {
+		gotMode := Mode(c.sample)
+
+		if !reflect.DeepEqual(gotMode, c.want) {
+			t.Errorf("Expected mode (%v) for (%v) but got (%v)", c.want, c.sample, gotMode)
+		}
+	}
+}
+
+func TestModeFailWhenEmptySample(t *testing.T) {
+	defer func() {
+		if recover() == nil {
+			t.Error("A panic was expected but nothing happened when calculate mode for empty Sample")
+		}
+	}()
+
+	Mode(vector.Vector{})
 }
