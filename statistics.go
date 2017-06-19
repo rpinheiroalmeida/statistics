@@ -66,6 +66,17 @@ func DataRange(sample vector.Vector) float64 {
 	return sample.Max() - sample.Min()
 }
 
+func DispersionMean(sample vector.Vector) vector.Vector {
+	mean := Mean(sample)
+	dispersion := vector.Vector{}
+
+	for _, value := range sample {
+		dispersion = append(dispersion, value-mean)
+	}
+
+	return dispersion
+}
+
 func count(sample vector.Vector) map[float64]int64 {
 	counts := map[float64]int64{}
 

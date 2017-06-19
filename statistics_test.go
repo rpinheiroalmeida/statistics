@@ -159,3 +159,35 @@ func TestDataRangeWhenSampleIsEmpty(t *testing.T) {
 
 	DataRange(vector.Vector{})
 }
+
+func TestDispersionMean(t *testing.T) {
+	cases := []struct {
+		sample vector.Vector
+		want   vector.Vector
+	}{
+		{vector.Vector{10.0, 20.0, 30.0}, vector.Vector{-10.0, 0.0, 10.0}},
+		{vector.Vector{0.0, 10.0, 20.0}, vector.Vector{-10.0, 0.0, 10.0}},
+		{vector.Vector{0.0, 0.0, 0.0}, vector.Vector{0.0, 0.0, 0.0}},
+		{vector.Vector{-1.0, 0.0, 1.0}, vector.Vector{-1.0, 0.0, 1.0}},
+		{vector.Vector{0.0, 20.0, 30.0}, vector.Vector{-16.666666666666668,
+			3.333333333333332, 13.333333333333332}},
+	}
+
+	for _, c := range cases {
+		gotDispersionMean := DispersionMean(c.sample)
+		if !reflect.DeepEqual(gotDispersionMean, c.want) {
+			t.Errorf("Expected DispersionMean (%v) for (%v) but got (%v)", c.want, c.sample,
+				gotDispersionMean)
+		}
+	}
+}
+
+func TestDispersionMeanWhenSampleIsEmpty(t *testing.T) {
+	defer func() {
+		if recover() == nil {
+			t.Error("A panic was expected but nothing happened when calculate DispersionMean for empty Sample")
+		}
+	}()
+
+	DispersionMean(vector.Vector{})
+}
