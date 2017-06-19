@@ -2,118 +2,40 @@ package statistics
 
 import (
 	"testing"
+
+	"github.com/rpinheiroalmeida/linalg/vector"
 )
 
-type SampleTestTable struct {
-	sample Sample
-	wanted float64
-}
-
-func TestMax(t *testing.T) {
-	cases := []SampleTestTable{
-		{
-			Sample{11.0},
-			11.0,
-		},
-		{
-			Sample{11.0, 12.0},
-			12.0,
-		}, {
-			Sample{11.0, 13.0, 12.0},
-			13.0,
-		},
-	}
-	for _, c := range cases {
-		gotMax := c.sample.Max()
-
-		if gotMax != c.wanted {
-			t.Errorf("Expected max (%v) in (%v) but got (%v)", c.wanted, c.sample, gotMax)
-		}
-	}
-}
-
-func TestMaxFail(t *testing.T) {
-	defer func() {
-		if recover() == nil {
-			t.Error("Expected panic when empty sample")
-		}
-	}()
-
-	Sample{}.Max()
-}
-
-func TestMin(t *testing.T) {
-	cases := []SampleTestTable{
-		{
-			Sample{13.0},
-			13.0,
-		},
-		{
-			Sample{12.0, 13.0},
-			12.0,
-		},
-		{
-			Sample{12.0, 11.0, 13.0},
-			11.0,
-		},
-	}
-	for _, c := range cases {
-		gotMin := c.sample.Min()
-		if gotMin != c.wanted {
-			t.Errorf("Expected max (%v) in (%v) but got (%v)", c.wanted, c.sample, gotMin)
-		}
-	}
-}
-
-func TestMinFail(t *testing.T) {
-	defer func() {
-		if recover() == nil {
-			t.Error("Expected panic when empty sample")
-		}
-	}()
-
-	Sample{}.Min()
-}
-
 func TestSum(t *testing.T) {
-	cases := []SampleTestTable{
-		{
-			Sample{7.0},
-			7.0,
-		},
-		{
-			Sample{32.0, 7.0},
-			39.0,
-		},
-		{
-			Sample{},
-			0.0,
-		},
+	cases := []struct {
+		sample vector.Vector
+		want   float64
+	}{
+		{vector.Vector{7.0}, 7.0},
+		{vector.Vector{32.0, 7.0}, 39.0},
+		{vector.Vector{}, 0.0},
 	}
 	for _, c := range cases {
-		gotSum := c.sample.Sum()
-		if gotSum != c.wanted {
-			t.Errorf("Expected total (%v) summing up (%v) but got (%v)", c.wanted, c.sample, gotSum)
+		gotSum := Sum(c.sample)
+		if gotSum != c.want {
+			t.Errorf("Expected total (%v) summing up (%v) but got (%v)", c.want, c.sample, gotSum)
 		}
 	}
 }
 
 func TestMean(t *testing.T) {
-	cases := []SampleTestTable{
-		{
-			Sample{7.0},
-			7.0,
-		},
-		{
-			Sample{13.0, 14.0},
-			13.5,
-		},
+	cases := []struct {
+		sample vector.Vector
+		want   float64
+	}{
+		{vector.Vector{7.0}, 7.0},
+		{vector.Vector{13.0, 14.0}, 13.5},
 	}
 	for _, c := range cases {
-		gotMean := c.sample.Mean()
+		gotMean := Mean(c.sample)
 
-		if gotMean != c.wanted {
-			t.Errorf("Expected mean of (%v) for (%v) but got (%v)", c.wanted, c.sample, gotMean)
+		if gotMean != c.want {
+			t.Errorf("Expected mean of (%v) for (%v) but got (%v)", c.want, c.sample, gotMean)
 		}
 	}
 }
@@ -125,37 +47,25 @@ func TestMeanPanicsWhenEmptySlice(t *testing.T) {
 		}
 	}()
 
-	Sample{}.Mean()
+	Mean(vector.Vector{})
 }
 
 func TestMedian(t *testing.T) {
-	cases := []SampleTestTable{
-		{
-			Sample{7.0},
-			7.0,
-		},
-		{
-			Sample{8.0, 11.0},
-			9.5,
-		},
-		{
-			Sample{7.0, 8.0, 11.0},
-			8.0,
-		},
-		{
-			Sample{7.0, 9.0, 10.0, 17.0},
-			9.5,
-		},
-		{
-			Sample{7.0, 10.0, 17.0, 9.0},
-			9.5,
-		},
+	cases := []struct {
+		sample vector.Vector
+		want   float64
+	}{
+		{vector.Vector{7.0}, 7.0},
+		{vector.Vector{8.0, 11.0}, 9.5},
+		{vector.Vector{7.0, 8.0, 11.0}, 8.0},
+		{vector.Vector{7.0, 9.0, 10.0, 17.0}, 9.5},
+		{vector.Vector{7.0, 10.0, 17.0, 9.0}, 9.5},
 	}
 	for _, c := range cases {
-		gotMedian := c.sample.Median()
+		gotMedian := Median(c.sample)
 
-		if gotMedian != c.wanted {
-			t.Errorf("Expected median (%v) for (%v) but got (%v)", c.wanted, c.sample, gotMedian)
+		if gotMedian != c.want {
+			t.Errorf("Expected median (%v) for (%v) but got (%v)", c.want, c.sample, gotMedian)
 		}
 	}
 }
@@ -167,46 +77,24 @@ func TestMedianPanicsWhenEmptySlice(t *testing.T) {
 		}
 	}()
 
-	Sample{}.Median()
-}
-
-type SampleQuantileTestTable struct {
-	SampleTestTable
-	percentile float64
+	Median(vector.Vector{})
 }
 
 func TestQuantile(t *testing.T) {
-	cases := []SampleQuantileTestTable{
-		{
-
-			SampleTestTable: SampleTestTable{
-				Sample{7.0},
-				7.0,
-			},
-			percentile: 0.99,
-		},
-		{
-
-			SampleTestTable: SampleTestTable{
-				Sample{7.0, 9.0, 10.0, 13.0, 17.0},
-				13.0,
-			},
-			percentile: 0.75,
-		},
-		{
-
-			SampleTestTable: SampleTestTable{
-				Sample{7.0, 9.0, 13.0, 10.0, 17.0},
-				13.0,
-			},
-			percentile: 0.75,
-		},
+	cases := []struct {
+		sample     vector.Vector
+		percentile float64
+		want       float64
+	}{
+		{vector.Vector{7.0}, 0.99, 7.0},
+		{vector.Vector{7.0, 9.0, 10.0, 13.0, 17.0}, 0.75, 13.0},
+		{vector.Vector{7.0, 9.0, 13.0, 10.0, 17.0}, 0.75, 13.0},
 	}
 
 	for _, c := range cases {
-		gotQuantile := c.sample.Quantile(c.percentile)
-		if gotQuantile != c.wanted {
-			t.Errorf("The expected quantile for (%v) with percentile of (%.2f) was (%.2f) but got (%.2f)", c.sample, c.percentile, c.wanted, gotQuantile)
+		gotQuantile := Quantile(c.sample, c.percentile)
+		if gotQuantile != c.want {
+			t.Errorf("The expected quantile for (%v) with percentile of (%.2f) was (%.2f) but got (%.2f)", c.sample, c.percentile, c.want, gotQuantile)
 		}
 	}
 }
