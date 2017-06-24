@@ -1,48 +1,32 @@
 package statistics
 
-import (
-	"sort"
+import "math"
 
-	"github.com/rpinheiroalmeida/linalg/vector"
-)
-
-type Pair struct {
-	Key   float64
-	Value int64
+type Counter struct {
+	counts map[float64]int
 }
 
-func (pair *Pair) increment() {
-	pair.Value++
-}
+var counts map[float64]int
 
-func Counter(sample vector.Vector) []*Pair {
-	counts := map[float64]*Pair{}
+func NewCounter(sample []float64) *Counter {
+	counts = make(map[float64]int, len(sample))
 
 	for _, data := range sample {
-		_, ok := counts[data]
-		if !ok {
-			counts[data] = &(Pair{data, 1})
+		if _, ok := counts[data]; !ok {
+			counts[data] = 1
 		} else {
-			counts[data].increment()
+			counts[data]++
 		}
 	}
-
-	return values(counts)
+	return &Counter{counts}
 }
 
-func values(counts map[float64]*Pair) []*Pair {
-	var keys []float64
-
-	for k := range counts {
-		keys = append(keys, k)
+func (counter Counter) MaxValue() int {
+	maxValue := math.MinInt64
+	for _, value := range counter.counts {
+		if value > maxValue {
+			maxValue = value
+		}
 	}
-
-	sort.Float64s(keys)
-
-	var pairs []*Pair
-	for _, key := range keys {
-		pairs = append(pairs, counts[key])
-	}
-
-	return pairs
+	return maxValue
 }
