@@ -20,7 +20,7 @@ func Sum(sample vector.Vector) float64 {
 func Mean(sample vector.Vector) float64 {
 	check(sample)
 
-	return Sum(sample) / float64(sample.Size())
+	return Sum(sample) / float64(sample.Len())
 }
 
 func Median(sample vector.Vector) float64 {
@@ -28,7 +28,7 @@ func Median(sample vector.Vector) float64 {
 
 	sort.Float64s(sample)
 
-	half := sample.Size() / 2
+	half := sample.Len() / 2
 
 	if oddSize(sample) {
 		return sample[half]
@@ -38,7 +38,7 @@ func Median(sample vector.Vector) float64 {
 }
 
 func Quantile(sample vector.Vector, percentile float64) float64 {
-	pIndex := int(percentile * float64(sample.Size()))
+	pIndex := int(percentile * float64(sample.Len()))
 
 	sort.Float64s(sample)
 
@@ -49,16 +49,16 @@ func Mode(sample vector.Vector) vector.Vector {
 	check(sample)
 
 	counter := NewCounter(sample)
-	maxQuantitie := counter.MaxValue()
+	maxQuantity := counter.MaxValue()
 
 	modes := vector.Vector{}
 
-	for k, v := range counts {
-		if v == maxQuantitie {
+	for k, v := range counter.Items {
+		if v == maxQuantity {
 			modes = append(modes, k)
 		}
 	}
-
+	sort.Reverse(modes)
 	return modes
 }
 
@@ -78,39 +78,16 @@ func DispersionMean(sample vector.Vector) vector.Vector {
 }
 
 func Variance(sample vector.Vector) float64 {
-	if sample.Size() <= 1 {
+	if sample.Len() <= 1 {
 		panic(fmt.Errorf("The (%v) does not have the minimum size (%v)", sample, 2))
 	}
 	dispersionMean := DispersionMean(sample)
 
-	return dispersionMean.SumOfSquares() / float64(sample.Size()-1)
-}
-
-// func count(sample vector.Vector) map[float64]int64 {
-// 	counts := map[float64]int64{}
-//
-// 	for _, value := range sample {
-// 		_, ok := counts[value]
-// 		if !ok {
-// 			counts[value] = 0
-// 		}
-// 		counts[value]++
-// 	}
-//
-// 	return counts
-// }
-
-func maxValue(counts map[float64]int64) int64 {
-	var quantities vector.Vector = vector.Vector{}
-	for _, v := range counts {
-		quantities = append(quantities, float64(v))
-	}
-
-	return int64(quantities.Max())
+	return dispersionMean.SumOfSquares() / float64(sample.Len()-1)
 }
 
 func oddSize(sample vector.Vector) bool {
-	return sample.Size()%2 == 1
+	return sample.Len()%2 == 1
 }
 
 func check(sample vector.Vector) {

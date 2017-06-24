@@ -3,16 +3,14 @@ package statistics
 import "sort"
 
 type Counter struct {
-	counts map[float64]int
+	Items map[float64]int
 }
-
-var counts map[float64]int
 
 func NewCounter(sample []float64) *Counter {
 	if len(sample) == 0 {
 		panic("There is an empty sequence.")
 	}
-	counts = make(map[float64]int, len(sample))
+	counts := make(map[float64]int, len(sample))
 
 	for _, data := range sample {
 		if _, ok := counts[data]; !ok {
@@ -26,7 +24,7 @@ func NewCounter(sample []float64) *Counter {
 
 func (counter Counter) MaxValue() int {
 	maxValue := 0
-	for _, value := range counter.counts {
+	for _, value := range counter.Items {
 		if value > maxValue {
 			maxValue = value
 		}
@@ -38,7 +36,7 @@ type set map[int]bool
 
 func (counter Counter) Values() []int {
 	valuesSet := make(set)
-	for _, value := range counter.counts {
+	for _, value := range counter.Items {
 		if _, ok := valuesSet[value]; !ok {
 			valuesSet[value] = true
 		}
