@@ -79,9 +79,7 @@ func DispersionMean(sample vector.Vector) vector.Vector {
 }
 
 func Variance(sample vector.Vector) float64 {
-	if sample.Len() <= 1 {
-		panic(fmt.Errorf("The (%v) does not have the minimum size (%v)", sample, 2))
-	}
+	checkMinimumSize(sample.Len(), 1)
 	dispersionMean := DispersionMean(sample)
 
 	return dispersionMean.SumOfSquares() / float64(sample.Len()-1)
@@ -93,6 +91,18 @@ func StandardDeviation(sample vector.Vector) float64 {
 
 func InterQuantileRange(sample vector.Vector) float64 {
 	return Quantile(sample, 0.75) - Quantile(sample, 0.25)
+}
+
+func Covariance(x, y vector.Vector) float64 {
+	n := x.Len()
+	checkMinimumSize(n, 1)
+	return (DispersionMean(x).Dot(DispersionMean(y))) / float64(n-1)
+}
+
+func checkMinimumSize(value, minimum int) {
+	if value <= minimum {
+		panic(fmt.Errorf("The minimum size was not obeyed - %d", minimum))
+	}
 }
 
 func oddSize(sample vector.Vector) bool {

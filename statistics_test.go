@@ -283,3 +283,42 @@ func TestInterQuantileRange_WhenVectorHasOneElement(t *testing.T) {
 
 	InterQuantileRange(vector.Vector{})
 }
+
+func TestCovariance(t *testing.T) {
+	cases := []struct {
+		x, y vector.Vector
+		want float64
+	}{
+		{vector.Vector{1.0, 2.0}, vector.Vector{1.0, 2.0}, 0.5},
+		{vector.Vector{1.0, 2.0, 3.0}, vector.Vector{1.0, 2.0}, 0.25},
+		{vector.Vector{1.0, 1.0}, vector.Vector{1.0, 1.0}, 0.0},
+		{vector.Vector{1.0, 1.0}, vector.Vector{1.0}, 0.0},
+	}
+
+	for _, c := range cases {
+		gotVariance := Covariance(c.x, c.y)
+		if gotVariance != c.want {
+			t.Errorf("Expected Covariance (%v, %v) want: (%v) but got: (%v)",
+				c.x, c.y, c.want, gotVariance)
+		}
+	}
+}
+
+func TestCovariance_WhenVectorHasOneElement(t *testing.T) {
+	cases := []struct {
+		x, y vector.Vector
+	}{
+		{vector.Vector{1.0}, vector.Vector{1.0, 2.0, 3.0}},
+		{vector.Vector{}, vector.Vector{1.0, 2.0, 3.0}},
+	}
+
+	for _, c := range cases {
+		defer func() {
+			if recover() == nil {
+				t.Error("A panic was expected when call Covariance with empty parameters")
+			}
+		}()
+
+		Covariance(c.x, c.y)
+	}
+}
