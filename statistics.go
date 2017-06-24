@@ -2,6 +2,7 @@ package statistics
 
 import (
 	"fmt"
+	"math"
 	"sort"
 
 	"github.com/rpinheiroalmeida/collections"
@@ -46,18 +47,19 @@ func Quantile(sample vector.Vector, percentile float64) float64 {
 
 func Mode(sample vector.Vector) vector.Vector {
 	check(sample)
-
 	counter := collections.NewCounter(sample)
 	maxQuantity := counter.MaxValue()
 
-	modes := vector.Vector{}
+	modes := make(vector.Vector, 0, maxQuantity)
 
 	for k, v := range counter.Items {
 		if v == maxQuantity {
 			modes = append(modes, k)
 		}
 	}
-	sort.Reverse(modes)
+
+	sort.Sort(sort.Reverse(modes))
+
 	return modes
 }
 
@@ -83,6 +85,14 @@ func Variance(sample vector.Vector) float64 {
 	dispersionMean := DispersionMean(sample)
 
 	return dispersionMean.SumOfSquares() / float64(sample.Len()-1)
+}
+
+func StandardDeviation(sample vector.Vector) float64 {
+	return math.Sqrt(Variance(sample))
+}
+
+func InterQuantileRange(sample vector.Vector) float64 {
+	return Quantile(sample, 0.75) - Quantile(sample, 0.25)
 }
 
 func oddSize(sample vector.Vector) bool {

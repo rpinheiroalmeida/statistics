@@ -228,3 +228,58 @@ func TestVariance_WhenVectorHasOneElement(t *testing.T) {
 
 	Variance(vector.Vector{1.0})
 }
+
+func TestStandardDeviation(t *testing.T) {
+	cases := []struct {
+		sample vector.Vector
+		want   float64
+	}{
+		{vector.Vector{1.0, 2.0, 3.0}, 1.0},
+		{vector.Vector{1.0, 2.0}, 0.7071067811865476},
+	}
+
+	for _, c := range cases {
+		got := StandardDeviation(c.sample)
+		if got != c.want {
+			t.Errorf("StandarDeviation(%v) want: %v but got: %v",
+				c.sample, c.want, got)
+		}
+	}
+}
+
+func TestStandardDeviation_WhenVectorHasOneElement(t *testing.T) {
+	defer func() {
+		if recover() == nil {
+			t.Error("A panic was expected but nothing happened when calculate Variance for empty Sample")
+		}
+	}()
+
+	StandardDeviation(vector.Vector{1.0})
+}
+
+func TestInterQuantileRange(t *testing.T) {
+	cases := []struct {
+		sample vector.Vector
+		want   float64
+	}{
+		{vector.Vector{1.0, 2.0, 3.0}, 2.0},
+		{vector.Vector{1.0, 2.0, 3.0, 4.0, 5.0, 6.0}, 3.0},
+	}
+	for _, c := range cases {
+		got := InterQuantileRange(c.sample)
+		if got != c.want {
+			t.Errorf("InterQuantileRange(%v) want: %v but got: %v",
+				c.sample, c.want, got)
+		}
+	}
+}
+
+func TestInterQuantileRange_WhenVectorHasOneElement(t *testing.T) {
+	defer func() {
+		if recover() == nil {
+			t.Error("A panic was expected but nothing happened when calculate Variance for empty Sample")
+		}
+	}()
+
+	InterQuantileRange(vector.Vector{})
+}
