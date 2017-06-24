@@ -6,10 +6,10 @@ import (
 	"sort"
 
 	"github.com/rpinheiroalmeida/collections"
-	"github.com/rpinheiroalmeida/linalg/vector"
+	"github.com/rpinheiroalmeida/linalg"
 )
 
-func Sum(sample vector.Vector) float64 {
+func Sum(sample collections.Vector) float64 {
 	total := 0.0
 	for _, value := range sample {
 		total += value
@@ -17,13 +17,13 @@ func Sum(sample vector.Vector) float64 {
 	return total
 }
 
-func Mean(sample vector.Vector) float64 {
+func Mean(sample collections.Vector) float64 {
 	check(sample)
 
 	return Sum(sample) / float64(sample.Len())
 }
 
-func Median(sample vector.Vector) float64 {
+func Median(sample collections.Vector) float64 {
 	check(sample)
 
 	sort.Float64s(sample)
@@ -34,10 +34,10 @@ func Median(sample vector.Vector) float64 {
 		return sample[half]
 	}
 
-	return Mean(vector.Vector{sample[half-1], sample[half]})
+	return Mean(collections.Vector{sample[half-1], sample[half]})
 }
 
-func Quantile(sample vector.Vector, percentile float64) float64 {
+func Quantile(sample collections.Vector, percentile float64) float64 {
 	pIndex := int(percentile * float64(sample.Len()))
 
 	sort.Float64s(sample)
@@ -45,12 +45,12 @@ func Quantile(sample vector.Vector, percentile float64) float64 {
 	return sample[pIndex]
 }
 
-func Mode(sample vector.Vector) vector.Vector {
+func Mode(sample collections.Vector) collections.Vector {
 	check(sample)
 	counter := collections.NewCounter(sample)
 	maxQuantity := counter.MaxValue()
 
-	modes := make(vector.Vector, 0, maxQuantity)
+	modes := make(collections.Vector, 0, maxQuantity)
 
 	for k, v := range counter.Items {
 		if v == maxQuantity {
@@ -63,13 +63,13 @@ func Mode(sample vector.Vector) vector.Vector {
 	return modes
 }
 
-func DataRange(sample vector.Vector) float64 {
+func DataRange(sample collections.Vector) float64 {
 	return sample.Max() - sample.Min()
 }
 
-func DispersionMean(sample vector.Vector) vector.Vector {
+func DispersionMean(sample collections.Vector) collections.Vector {
 	mean := Mean(sample)
-	dispersion := vector.Vector{}
+	dispersion := collections.Vector{}
 
 	for _, value := range sample {
 		dispersion = append(dispersion, value-mean)
@@ -78,25 +78,25 @@ func DispersionMean(sample vector.Vector) vector.Vector {
 	return dispersion
 }
 
-func Variance(sample vector.Vector) float64 {
+func Variance(sample collections.Vector) float64 {
 	checkMinimumSize(sample.Len(), 1)
 	dispersionMean := DispersionMean(sample)
 
-	return dispersionMean.SumOfSquares() / float64(sample.Len()-1)
+	return linalg.SumOfSquares(dispersionMean) / float64(sample.Len()-1)
 }
 
-func StandardDeviation(sample vector.Vector) float64 {
+func StandardDeviation(sample collections.Vector) float64 {
 	return math.Sqrt(Variance(sample))
 }
 
-func InterQuantileRange(sample vector.Vector) float64 {
+func InterQuantileRange(sample collections.Vector) float64 {
 	return Quantile(sample, 0.75) - Quantile(sample, 0.25)
 }
 
-func Covariance(x, y vector.Vector) float64 {
+func Covariance(x, y collections.Vector) float64 {
 	n := x.Len()
 	checkMinimumSize(n, 1)
-	return (DispersionMean(x).Dot(DispersionMean(y))) / float64(n-1)
+	return linalg.Dot(DispersionMean(x), DispersionMean(y)) / float64(n-1)
 }
 
 func checkMinimumSize(value, minimum int) {
@@ -105,11 +105,11 @@ func checkMinimumSize(value, minimum int) {
 	}
 }
 
-func oddSize(sample vector.Vector) bool {
+func oddSize(sample collections.Vector) bool {
 	return sample.Len()%2 == 1
 }
 
-func check(sample vector.Vector) {
+func check(sample collections.Vector) {
 	if sample.Empty() {
 		panic("Operation Not allowed with empty sample")
 	}

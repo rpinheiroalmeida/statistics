@@ -4,17 +4,17 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/rpinheiroalmeida/linalg/vector"
+	"github.com/rpinheiroalmeida/collections"
 )
 
 func TestSum(t *testing.T) {
 	cases := []struct {
-		sample vector.Vector
+		sample collections.Vector
 		want   float64
 	}{
-		{vector.Vector{7.0}, 7.0},
-		{vector.Vector{32.0, 7.0}, 39.0},
-		{vector.Vector{}, 0.0},
+		{collections.Vector{7.0}, 7.0},
+		{collections.Vector{32.0, 7.0}, 39.0},
+		{collections.Vector{}, 0.0},
 	}
 	for _, c := range cases {
 		gotSum := Sum(c.sample)
@@ -26,11 +26,11 @@ func TestSum(t *testing.T) {
 
 func TestMean(t *testing.T) {
 	cases := []struct {
-		sample vector.Vector
+		sample collections.Vector
 		want   float64
 	}{
-		{vector.Vector{7.0}, 7.0},
-		{vector.Vector{13.0, 14.0}, 13.5},
+		{collections.Vector{7.0}, 7.0},
+		{collections.Vector{13.0, 14.0}, 13.5},
 	}
 	for _, c := range cases {
 		gotMean := Mean(c.sample)
@@ -48,19 +48,19 @@ func TestMeanPanicsWhenEmptySlice(t *testing.T) {
 		}
 	}()
 
-	Mean(vector.Vector{})
+	Mean(collections.Vector{})
 }
 
 func TestMedian(t *testing.T) {
 	cases := []struct {
-		sample vector.Vector
+		sample collections.Vector
 		want   float64
 	}{
-		{vector.Vector{7.0}, 7.0},
-		{vector.Vector{8.0, 11.0}, 9.5},
-		{vector.Vector{7.0, 8.0, 11.0}, 8.0},
-		{vector.Vector{7.0, 9.0, 10.0, 17.0}, 9.5},
-		{vector.Vector{7.0, 10.0, 17.0, 9.0}, 9.5},
+		{collections.Vector{7.0}, 7.0},
+		{collections.Vector{8.0, 11.0}, 9.5},
+		{collections.Vector{7.0, 8.0, 11.0}, 8.0},
+		{collections.Vector{7.0, 9.0, 10.0, 17.0}, 9.5},
+		{collections.Vector{7.0, 10.0, 17.0, 9.0}, 9.5},
 	}
 	for _, c := range cases {
 		gotMedian := Median(c.sample)
@@ -78,18 +78,18 @@ func TestMedianPanicsWhenEmptySlice(t *testing.T) {
 		}
 	}()
 
-	Median(vector.Vector{})
+	Median(collections.Vector{})
 }
 
 func TestQuantile(t *testing.T) {
 	cases := []struct {
-		sample     vector.Vector
+		sample     collections.Vector
 		percentile float64
 		want       float64
 	}{
-		{vector.Vector{7.0}, 0.99, 7.0},
-		{vector.Vector{7.0, 9.0, 10.0, 13.0, 17.0}, 0.75, 13.0},
-		{vector.Vector{7.0, 9.0, 13.0, 10.0, 17.0}, 0.75, 13.0},
+		{collections.Vector{7.0}, 0.99, 7.0},
+		{collections.Vector{7.0, 9.0, 10.0, 13.0, 17.0}, 0.75, 13.0},
+		{collections.Vector{7.0, 9.0, 13.0, 10.0, 17.0}, 0.75, 13.0},
 	}
 
 	for _, c := range cases {
@@ -102,12 +102,12 @@ func TestQuantile(t *testing.T) {
 
 func TestMode(t *testing.T) {
 	cases := []struct {
-		sample vector.Vector
-		want   vector.Vector
+		sample collections.Vector
+		want   collections.Vector
 	}{
-		{vector.Vector{7.0}, vector.Vector{7.0}},
-		{vector.Vector{7.0, 13.0, 13.0}, vector.Vector{13.0}},
-		{vector.Vector{17.0, 7.0, 13.0, 17.0, 13.0}, vector.Vector{17.0, 13.0}},
+		{collections.Vector{7.0}, collections.Vector{7.0}},
+		{collections.Vector{7.0, 13.0, 13.0}, collections.Vector{13.0}},
+		{collections.Vector{17.0, 7.0, 13.0, 17.0, 13.0}, collections.Vector{17.0, 13.0}},
 	}
 
 	for _, c := range cases {
@@ -126,19 +126,19 @@ func TestModeFailWhenEmptySample(t *testing.T) {
 		}
 	}()
 
-	Mode(vector.Vector{})
+	Mode(collections.Vector{})
 }
 
 func TestDataRange(t *testing.T) {
 	cases := []struct {
-		sample vector.Vector
+		sample collections.Vector
 		want   float64
 	}{
-		{vector.Vector{10.0, 11.0, 12.0}, 2.0},
-		{vector.Vector{0.0, 11.0, 12.0}, 12.0},
-		{vector.Vector{-1.0, 11.0, 12.0}, 13.0},
-		{vector.Vector{1.0, 1.0, 1.0}, 0.0},
-		{vector.Vector{11.0}, 0.0},
+		{collections.Vector{10.0, 11.0, 12.0}, 2.0},
+		{collections.Vector{0.0, 11.0, 12.0}, 12.0},
+		{collections.Vector{-1.0, 11.0, 12.0}, 13.0},
+		{collections.Vector{1.0, 1.0, 1.0}, 0.0},
+		{collections.Vector{11.0}, 0.0},
 	}
 
 	for _, c := range cases {
@@ -157,19 +157,19 @@ func TestDataRangeWhenSampleIsEmpty(t *testing.T) {
 		}
 	}()
 
-	DataRange(vector.Vector{})
+	DataRange(collections.Vector{})
 }
 
 func TestDispersionMean(t *testing.T) {
 	cases := []struct {
-		sample vector.Vector
-		want   vector.Vector
+		sample collections.Vector
+		want   collections.Vector
 	}{
-		{vector.Vector{10.0, 20.0, 30.0}, vector.Vector{-10.0, 0.0, 10.0}},
-		{vector.Vector{0.0, 10.0, 20.0}, vector.Vector{-10.0, 0.0, 10.0}},
-		{vector.Vector{0.0, 0.0, 0.0}, vector.Vector{0.0, 0.0, 0.0}},
-		{vector.Vector{-1.0, 0.0, 1.0}, vector.Vector{-1.0, 0.0, 1.0}},
-		{vector.Vector{0.0, 20.0, 30.0}, vector.Vector{-16.666666666666668, 3.333333333333332, 13.333333333333332}},
+		{collections.Vector{10.0, 20.0, 30.0}, collections.Vector{-10.0, 0.0, 10.0}},
+		{collections.Vector{0.0, 10.0, 20.0}, collections.Vector{-10.0, 0.0, 10.0}},
+		{collections.Vector{0.0, 0.0, 0.0}, collections.Vector{0.0, 0.0, 0.0}},
+		{collections.Vector{-1.0, 0.0, 1.0}, collections.Vector{-1.0, 0.0, 1.0}},
+		{collections.Vector{0.0, 20.0, 30.0}, collections.Vector{-16.666666666666668, 3.333333333333332, 13.333333333333332}},
 	}
 
 	for _, c := range cases {
@@ -188,16 +188,16 @@ func TestDispersionMeanWhenSampleIsEmpty(t *testing.T) {
 		}
 	}()
 
-	DispersionMean(vector.Vector{})
+	DispersionMean(collections.Vector{})
 }
 
 func TestVariance(t *testing.T) {
 	cases := []struct {
-		sample vector.Vector
+		sample collections.Vector
 		want   float64
 	}{
-		{vector.Vector{1.0, 2.0}, 0.5},
-		{vector.Vector{1.0, 2.0, 3.0}, 1.0},
+		{collections.Vector{1.0, 2.0}, 0.5},
+		{collections.Vector{1.0, 2.0, 3.0}, 1.0},
 	}
 
 	for _, c := range cases {
@@ -216,7 +216,7 @@ func TestVariance_WhenVectorIsEmpty(t *testing.T) {
 		}
 	}()
 
-	Variance(vector.Vector{})
+	Variance(collections.Vector{})
 }
 
 func TestVariance_WhenVectorHasOneElement(t *testing.T) {
@@ -226,16 +226,16 @@ func TestVariance_WhenVectorHasOneElement(t *testing.T) {
 		}
 	}()
 
-	Variance(vector.Vector{1.0})
+	Variance(collections.Vector{1.0})
 }
 
 func TestStandardDeviation(t *testing.T) {
 	cases := []struct {
-		sample vector.Vector
+		sample collections.Vector
 		want   float64
 	}{
-		{vector.Vector{1.0, 2.0, 3.0}, 1.0},
-		{vector.Vector{1.0, 2.0}, 0.7071067811865476},
+		{collections.Vector{1.0, 2.0, 3.0}, 1.0},
+		{collections.Vector{1.0, 2.0}, 0.7071067811865476},
 	}
 
 	for _, c := range cases {
@@ -254,16 +254,16 @@ func TestStandardDeviation_WhenVectorHasOneElement(t *testing.T) {
 		}
 	}()
 
-	StandardDeviation(vector.Vector{1.0})
+	StandardDeviation(collections.Vector{1.0})
 }
 
 func TestInterQuantileRange(t *testing.T) {
 	cases := []struct {
-		sample vector.Vector
+		sample collections.Vector
 		want   float64
 	}{
-		{vector.Vector{1.0, 2.0, 3.0}, 2.0},
-		{vector.Vector{1.0, 2.0, 3.0, 4.0, 5.0, 6.0}, 3.0},
+		{collections.Vector{1.0, 2.0, 3.0}, 2.0},
+		{collections.Vector{1.0, 2.0, 3.0, 4.0, 5.0, 6.0}, 3.0},
 	}
 	for _, c := range cases {
 		got := InterQuantileRange(c.sample)
@@ -281,18 +281,18 @@ func TestInterQuantileRange_WhenVectorHasOneElement(t *testing.T) {
 		}
 	}()
 
-	InterQuantileRange(vector.Vector{})
+	InterQuantileRange(collections.Vector{})
 }
 
 func TestCovariance(t *testing.T) {
 	cases := []struct {
-		x, y vector.Vector
+		x, y collections.Vector
 		want float64
 	}{
-		{vector.Vector{1.0, 2.0}, vector.Vector{1.0, 2.0}, 0.5},
-		{vector.Vector{1.0, 2.0, 3.0}, vector.Vector{1.0, 2.0}, 0.25},
-		{vector.Vector{1.0, 1.0}, vector.Vector{1.0, 1.0}, 0.0},
-		{vector.Vector{1.0, 1.0}, vector.Vector{1.0}, 0.0},
+		{collections.Vector{1.0, 2.0}, collections.Vector{1.0, 2.0}, 0.5},
+		{collections.Vector{1.0, 2.0, 3.0}, collections.Vector{1.0, 2.0}, 0.25},
+		{collections.Vector{1.0, 1.0}, collections.Vector{1.0, 1.0}, 0.0},
+		{collections.Vector{1.0, 1.0}, collections.Vector{1.0}, 0.0},
 	}
 
 	for _, c := range cases {
@@ -306,10 +306,10 @@ func TestCovariance(t *testing.T) {
 
 func TestCovariance_WhenVectorHasOneElement(t *testing.T) {
 	cases := []struct {
-		x, y vector.Vector
+		x, y collections.Vector
 	}{
-		{vector.Vector{1.0}, vector.Vector{1.0, 2.0, 3.0}},
-		{vector.Vector{}, vector.Vector{1.0, 2.0, 3.0}},
+		{collections.Vector{1.0}, collections.Vector{1.0, 2.0, 3.0}},
+		{collections.Vector{}, collections.Vector{1.0, 2.0, 3.0}},
 	}
 
 	for _, c := range cases {
