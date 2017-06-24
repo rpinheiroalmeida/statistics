@@ -169,8 +169,7 @@ func TestDispersionMean(t *testing.T) {
 		{vector.Vector{0.0, 10.0, 20.0}, vector.Vector{-10.0, 0.0, 10.0}},
 		{vector.Vector{0.0, 0.0, 0.0}, vector.Vector{0.0, 0.0, 0.0}},
 		{vector.Vector{-1.0, 0.0, 1.0}, vector.Vector{-1.0, 0.0, 1.0}},
-		{vector.Vector{0.0, 20.0, 30.0}, vector.Vector{-16.666666666666668,
-			3.333333333333332, 13.333333333333332}},
+		{vector.Vector{0.0, 20.0, 30.0}, vector.Vector{-16.666666666666668, 3.333333333333332, 13.333333333333332}},
 	}
 
 	for _, c := range cases {
@@ -190,4 +189,42 @@ func TestDispersionMeanWhenSampleIsEmpty(t *testing.T) {
 	}()
 
 	DispersionMean(vector.Vector{})
+}
+
+func TestVariance(t *testing.T) {
+	cases := []struct {
+		sample vector.Vector
+		want   float64
+	}{
+		{vector.Vector{1.0, 2.0}, 0.5},
+		{vector.Vector{1.0, 2.0, 3.0}, 1.0},
+	}
+
+	for _, c := range cases {
+		gotVariance := Variance(c.sample)
+		if gotVariance != c.want {
+			t.Errorf("Expected Variance (%v) for (%v) but got (%v)", c.want, c.sample,
+				gotVariance)
+		}
+	}
+}
+
+func TestVariance_WhenVectorIsEmpty(t *testing.T) {
+	defer func() {
+		if recover() == nil {
+			t.Error("A panic was expected but nothing happened when calculate Variance for empty Sample")
+		}
+	}()
+
+	Variance(vector.Vector{})
+}
+
+func TestVariance_WhenVectorHasOneElement(t *testing.T) {
+	defer func() {
+		if recover() == nil {
+			t.Error("A panic was expected but nothing happened when calculate Variance for empty Sample")
+		}
+	}()
+
+	Variance(vector.Vector{1.0})
 }

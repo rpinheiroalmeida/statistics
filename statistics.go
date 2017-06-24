@@ -1,6 +1,7 @@
 package statistics
 
 import (
+	"fmt"
 	"sort"
 
 	"github.com/rpinheiroalmeida/linalg/vector"
@@ -75,6 +76,15 @@ func DispersionMean(sample vector.Vector) vector.Vector {
 	}
 
 	return dispersion
+}
+
+func Variance(sample vector.Vector) float64 {
+	if sample.Size() <= 1 {
+		panic(fmt.Errorf("The (%v) does not have the minimum size (%v)", sample, 2))
+	}
+	dispersionMean := DispersionMean(sample)
+
+	return dispersionMean.SumOfSquares() / float64(sample.Size()-1)
 }
 
 func count(sample vector.Vector) map[float64]int64 {
