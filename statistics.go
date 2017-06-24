@@ -4,10 +4,9 @@ import (
 	"fmt"
 	"sort"
 
+	"github.com/rpinheiroalmeida/collections"
 	"github.com/rpinheiroalmeida/linalg/vector"
 )
-
-type Sample vector.Vector
 
 func Sum(sample vector.Vector) float64 {
 	total := 0.0
@@ -48,7 +47,7 @@ func Quantile(sample vector.Vector, percentile float64) float64 {
 func Mode(sample vector.Vector) vector.Vector {
 	check(sample)
 
-	counter := NewCounter(sample)
+	counter := collections.NewCounter(sample)
 	maxQuantity := counter.MaxValue()
 
 	modes := vector.Vector{}
