@@ -48,9 +48,8 @@ func Quantile(sample vector.Vector, percentile float64) float64 {
 func Mode(sample vector.Vector) vector.Vector {
 	check(sample)
 
-	counts := count(sample)
-
-	maxQuantitie := maxValue(counts)
+	counter := NewCounter(sample)
+	maxQuantitie := counter.MaxValue()
 
 	modes := vector.Vector{}
 
@@ -87,19 +86,19 @@ func Variance(sample vector.Vector) float64 {
 	return dispersionMean.SumOfSquares() / float64(sample.Size()-1)
 }
 
-func count(sample vector.Vector) map[float64]int64 {
-	counts := map[float64]int64{}
-
-	for _, value := range sample {
-		_, ok := counts[value]
-		if !ok {
-			counts[value] = 0
-		}
-		counts[value]++
-	}
-
-	return counts
-}
+// func count(sample vector.Vector) map[float64]int64 {
+// 	counts := map[float64]int64{}
+//
+// 	for _, value := range sample {
+// 		_, ok := counts[value]
+// 		if !ok {
+// 			counts[value] = 0
+// 		}
+// 		counts[value]++
+// 	}
+//
+// 	return counts
+// }
 
 func maxValue(counts map[float64]int64) int64 {
 	var quantities vector.Vector = vector.Vector{}
