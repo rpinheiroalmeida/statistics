@@ -322,3 +322,57 @@ func TestCovariance_WhenVectorHasOneElement(t *testing.T) {
 		Covariance(c.x, c.y)
 	}
 }
+
+func TestCorrelation(t *testing.T) {
+	cases := []struct {
+		x, y collections.Vector
+		want float64
+	}{
+		{
+			collections.Vector{1.0, 2.0, 3.0},
+			collections.Vector{1.0, 2.0},
+			0.35355339059327373,
+		},
+		{
+			collections.Vector{1.0, 2.0},
+			collections.Vector{1.0, 2.0},
+			0.9999999999999999,
+		},
+		{
+			collections.Vector{1.0, 2.0, 3.0},
+			collections.Vector{1.0, 2.0, 3.0},
+			1.0,
+		},
+		{
+			collections.Vector{1.0, 1.0},
+			collections.Vector{0.0, 0.0},
+			0.0,
+		},
+	}
+	for _, c := range cases {
+		got := Correlation(c.x, c.y)
+		if got != c.want {
+			t.Errorf("Correlation(%v, %v) want: %v but got: %v",
+				c.x, c.y, c.want, got)
+		}
+	}
+}
+
+func TestCorrelation_WhenVectorHasOneElement(t *testing.T) {
+	cases := []struct {
+		x, y collections.Vector
+	}{
+		{collections.Vector{1.0}, collections.Vector{1.0, 2.0, 3.0}},
+		{collections.Vector{}, collections.Vector{1.0, 2.0, 3.0}},
+	}
+
+	for _, c := range cases {
+		defer func() {
+			if recover() == nil {
+				t.Error("A panic was expected when call Covariance with empty parameters")
+			}
+		}()
+
+		Correlation(c.x, c.y)
+	}
+}

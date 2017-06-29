@@ -69,7 +69,7 @@ func DataRange(sample collections.Vector) float64 {
 
 func DispersionMean(sample collections.Vector) collections.Vector {
 	mean := Mean(sample)
-	dispersion := collections.Vector{}
+	dispersion := make(collections.Vector, 0, cap(sample))
 
 	for _, value := range sample {
 		dispersion = append(dispersion, value-mean)
@@ -97,6 +97,15 @@ func Covariance(x, y collections.Vector) float64 {
 	n := x.Len()
 	checkMinimumSize(n, 1)
 	return linalg.Dot(DispersionMean(x), DispersionMean(y)) / float64(n-1)
+}
+
+func Correlation(x, y collections.Vector) float64 {
+	standardDeviationX := StandardDeviation(x)
+	standardDeviationY := StandardDeviation(y)
+	if standardDeviationX > 0 && standardDeviationY > 0 {
+		return Covariance(x, y) / standardDeviationX / standardDeviationY
+	}
+	return float64(0)
 }
 
 func checkMinimumSize(value, minimum int) {
