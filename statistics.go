@@ -50,7 +50,7 @@ func Mode(sample collections.Vector) collections.Vector {
 	counter := collections.NewCounter(sample)
 	maxQuantity := counter.MaxValue()
 
-	modes := make(collections.Vector, 0, maxQuantity)
+	modes := make(collections.Vector, 0, len(sample))
 
 	for k, v := range counter.Items {
 		if v == maxQuantity {
